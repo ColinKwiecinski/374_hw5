@@ -115,6 +115,7 @@ int dictionary_generate(struct dict_t *dict, char *input) {
     // printf("%s", temp[count].word);
     count++;
   }
+  dict->num_items = count;
   fclose(fp);
   return 0;
 }
