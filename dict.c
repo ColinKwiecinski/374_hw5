@@ -84,16 +84,12 @@ int dictionary_open_map(struct dict_t *dict) {
   }
   dict->fd = fd;
   dict->base = base;
-  return 0; // or return fd?
+  return 0;
 }
 
 // The rest of the functions should be whatever is left from the header that
 // hasn't been defined yet.
 // Good luck!
-
-// @tpirtle, I eventually discovered my issue was that I overrote
-// my words file when I had the arguments in the wrong order, thus
-// giving me some frankenstein binary/text dictionary.
 
 int dictionary_generate(struct dict_t *dict, char *input) {
   dictionary_open_map(dict);
@@ -112,10 +108,8 @@ int dictionary_generate(struct dict_t *dict, char *input) {
     }
     strcpy(temp[count].word, str);
     temp[count].len = strlen(str);
-    // printf("%s", temp[count].word);
     count++;
   }
-  dict->num_items = count;
   fclose(fp);
   return 0;
 }
@@ -134,10 +128,6 @@ char *dictionary_exists(struct dict_t *dict, char *word) {
 int dictionary_load(struct dict_t *dict) {
   void *base = mmap(NULL, dict->num_items * sizeof(struct dict_item),
                     PROT_READ | PROT_WRITE, MAP_SHARED, dict->fd, 0);
-  if (base == MAP_FAILED) {
-    perror("mapping failure");
-    return EXIT_FAILURE;
-  }
   dict->base = base;
   // WHAT!? Why does returning exit failure pass the test cases??
   // but exit success fails!
@@ -153,7 +143,7 @@ int dictionary_larger_than(struct dict_t *dict, size_t n) {
   temp = dict->base;
   int count = 0;
   for (int i = 0; i < dict->num_items; i++) {
-    if (temp[i].len > n) {
+    if (temp[i].len > n && temp[i].len != 0) {
       count++;
     }
   }
@@ -165,7 +155,7 @@ int dictionary_smaller_than(struct dict_t *dict, size_t n) {
   temp = dict->base;
   int count = 0;
   for (int i = 0; i < dict->num_items; i++) {
-    if (temp[i].len < n) {
+    if (temp[i].len < n && temp[i].len != 0) {
       count++;
     }
   }
@@ -177,7 +167,7 @@ int dictionary_equal_to(struct dict_t *dict, size_t n) {
   temp = dict->base;
   int count = 0;
   for (int i = 0; i < dict->num_items; i++) {
-    if (temp[i].len == n) {
+    if (temp[i].len == n && temp[i].len != 0) {
       count++;
     }
   }
